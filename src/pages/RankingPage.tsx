@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, Medal, Award } from 'lucide-react';
+import { Trophy, Medal, Award, RefreshCw, AlertCircle } from 'lucide-react';
 import { usePlatform } from '@/core/context/PlatformContext';
 import { useApi } from '@/core/hooks/useApi';
 import { Drama } from '@/core/types';
@@ -10,29 +10,43 @@ const RankingPage: React.FC = () => {
   const { currentPlatform } = usePlatform();
   const api = useApi();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [rankings, setRankings] = useState<Drama[]>([]);
 
-  useEffect(() => {
-    const fetchRankings = async () => {
-      setLoading(true);
-      try {
-        const data = await api.getRanking();
-        if (data.length === 0) {
-          // Use mock data if API returns empty
-          const homeData = await api.getHome();
-          setRankings(homeData.dramas || []);
-        } else {
-          setRankings(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch rankings:', error);
-        const homeData = await api.getHome();
-        setRankings(homeData.dramas || []);
-      } finally {
-        setLoading(false);
+  const fetchRankings = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Try ranking first, then fallback to home
+      let data = await api.getRanking();
+      
+      if (data.length === 0) {
+        console.log('No ranking data, trying trending...');
+        data = await api.getTrending();
       }
-    };
+      
+      if (data.length === 0) {
+        console.log('No trending data, trying home...');
+        const homeData = await api.getHome();
+        data = homeData.dramas || [];
+      }
+      
+      if (data.length === 0) {
+        setError(`Tidak ada data ranking dari ${currentPlatform.name}`);
+      }
+      
+      setRankings(data);
+    } catch (err: any) {
+      console.error('Failed to fetch rankings:', err);
+      setError(`Gagal memuat ranking: ${err.message}`);
+      setRankings([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchRankings();
   }, [currentPlatform.id]);
 
@@ -74,18 +88,50 @@ const RankingPage: React.FC = () => {
             </h1>
           </div>
           <p className="text-muted-foreground">
-            Most popular dramas on {currentPlatform.name}
+            Drama terpopuler di {currentPlatform.name}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            API: {currentPlatform.api.baseUrl}
           </p>
         </div>
 
-        {/* Rankings List */}
-        {loading ? (
+        {/* Loading */}
+        {loading && (
           <>
             <CarouselSkeleton />
             <CarouselSkeleton />
           </>
-        ) : (
+        )}
+
+        {/* Error */}
+        {!loading && error && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <AlertCircle className="w-16 h-16 text-destructive mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Terjadi Kesalahan</h3>
+            <p className="text-muted-foreground text-center mb-6">{error}</p>
+            <button
+              onClick={fetchRankings}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105"
+              style={{ backgroundColor: currentPlatform.color }}
+            >
+              <RefreshCw className="w-5 h-5" />
+              Coba Lagi
+            </button>
+          </div>
+        )}
+
+        {/* Rankings List */}
+        {!loading && !error && rankings.length > 0 && (
           <div className="max-w-4xl mx-auto space-y-4">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
+                ✓ Real API
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {rankings.length} drama
+              </span>
+            </div>
+
             {rankings.slice(0, 20).map((drama, index) => (
               <Link
                 key={drama.id}
@@ -99,12 +145,17 @@ const RankingPage: React.FC = () => {
                 </div>
 
                 {/* Poster */}
-                <div className="w-16 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                  <img
-                    src={drama.cover}
-                    alt={drama.title}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-16 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-secondary">
+                  {drama.cover && (
+                    <img
+                      src={drama.cover}
+                      alt={drama.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  )}
                 </div>
 
                 {/* Info */}
@@ -129,13 +180,27 @@ const RankingPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Trending indicator */}
-                <div className="hidden sm:flex items-center gap-1 text-sm" style={{ color: currentPlatform.color }}>
-                  <span>🔥</span>
-                  <span>Hot</span>
-                </div>
+                {/* Status */}
+                {drama.status && (
+                  <div className="hidden sm:flex items-center gap-1 text-sm px-2 py-1 rounded-full" 
+                    style={{ backgroundColor: `${currentPlatform.color}30`, color: currentPlatform.color }}>
+                    <span>🔥</span>
+                    <span>{drama.status}</span>
+                  </div>
+                )}
               </Link>
             ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && !error && rankings.length === 0 && (
+          <div className="text-center py-20">
+            <div className="text-6xl mb-4">🏆</div>
+            <h3 className="text-xl font-semibold mb-2">Tidak Ada Data Ranking</h3>
+            <p className="text-muted-foreground">
+              Platform {currentPlatform.name} tidak memiliki endpoint ranking
+            </p>
           </div>
         )}
       </div>
