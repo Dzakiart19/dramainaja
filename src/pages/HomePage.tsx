@@ -5,173 +5,128 @@ import { Drama, HomeData } from '@/core/types';
 import { HeroBanner } from '@/components/drama/HeroBanner';
 import { DramaCarousel } from '@/components/drama/DramaCarousel';
 import { HeroBannerSkeleton, CarouselSkeleton } from '@/components/ui/loading-skeleton';
-
-// Fallback mock dramas in case API fails
-const MOCK_DRAMAS: Drama[] = [
-  {
-    id: '1',
-    title: 'Love in the Moonlight',
-    cover: 'https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=400&h=600&fit=crop',
-    description: 'A romantic drama set in ancient times with beautiful cinematography',
-    rating: 9.2,
-    episodes: 24,
-    genre: ['Romance', 'Historical'],
-    year: '2024',
-  },
-  {
-    id: '2',
-    title: 'CEO\'s Secret Love',
-    cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop',
-    description: 'Modern romance between CEO and assistant',
-    rating: 8.8,
-    episodes: 30,
-    genre: ['Romance', 'Modern'],
-    year: '2024',
-  },
-  {
-    id: '3',
-    title: 'Eternal Promise',
-    cover: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=600&fit=crop',
-    description: 'Fantasy romance across dimensions',
-    rating: 9.0,
-    episodes: 40,
-    genre: ['Fantasy', 'Romance'],
-    year: '2023',
-  },
-  {
-    id: '4',
-    title: 'Royal Intrigue',
-    cover: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop',
-    description: 'Palace drama with unexpected twists',
-    rating: 8.7,
-    episodes: 36,
-    genre: ['Historical', 'Drama'],
-    year: '2024',
-  },
-  {
-    id: '5',
-    title: 'Hidden Love',
-    cover: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=600&fit=crop',
-    description: 'Sweet campus romance story',
-    rating: 9.1,
-    episodes: 25,
-    genre: ['Romance', 'Youth'],
-    year: '2023',
-  },
-  {
-    id: '6',
-    title: 'Sword Dynasty',
-    cover: 'https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=400&h=600&fit=crop',
-    description: 'Epic martial arts adventure',
-    rating: 8.9,
-    episodes: 50,
-    genre: ['Action', 'Wuxia'],
-    year: '2024',
-  },
-  {
-    id: '7',
-    title: 'My Little Happiness',
-    cover: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=600&fit=crop',
-    description: 'Heartwarming slice of life romance',
-    rating: 8.6,
-    episodes: 28,
-    genre: ['Romance', 'Comedy'],
-    year: '2024',
-  },
-  {
-    id: '8',
-    title: 'The Untamed',
-    cover: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=600&fit=crop',
-    description: 'Epic cultivation fantasy adventure',
-    rating: 9.5,
-    episodes: 50,
-    genre: ['Fantasy', 'Adventure'],
-    year: '2023',
-  },
-];
+import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 
 const HomePage: React.FC = () => {
   const { currentPlatform } = usePlatform();
   const api = useApi();
-  const [loading, setLoading] = useState(false);
-  const [homeData, setHomeData] = useState<HomeData>({ dramas: MOCK_DRAMAS });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [homeData, setHomeData] = useState<HomeData | null>(null);
+
+  const fetchHome = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      console.log(`📡 Fetching data from ${currentPlatform.name}...`);
+      const data = await api.getHome();
+      
+      if (data.dramas.length === 0 && !data.banners?.length && !data.sections?.length) {
+        setError(`Tidak ada data dari ${currentPlatform.name}. Coba platform lain.`);
+      }
+      
+      setHomeData(data);
+    } catch (err: any) {
+      console.error('Failed to fetch home data:', err);
+      setError(`Gagal memuat data dari ${currentPlatform.name}: ${err.message}`);
+      setHomeData({ dramas: [] });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchHome = async () => {
-      // Set a timeout of 5 seconds, then use mock data
-      const timeoutPromise = new Promise<HomeData>((resolve) => {
-        setTimeout(() => {
-          resolve({ dramas: MOCK_DRAMAS });
-        }, 5000);
-      });
-
-      try {
-        const dataPromise = api.getHome();
-        const data = await Promise.race([dataPromise, timeoutPromise]);
-        
-        // If data is empty, use mock data
-        if (!data.dramas?.length && !data.sections?.length && !data.banners?.length) {
-          setHomeData({ dramas: MOCK_DRAMAS });
-        } else {
-          setHomeData(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch home data:', error);
-        setHomeData({ dramas: MOCK_DRAMAS });
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchHome();
   }, [currentPlatform.id]);
 
   const featuredDrama = homeData?.banners?.[0] || homeData?.dramas?.[0];
-  const allDramas = homeData?.dramas || MOCK_DRAMAS;
+  const allDramas = homeData?.dramas || [];
   const sections = homeData?.sections || [];
 
   // Create sections from dramas if no sections exist
   const displaySections = sections.length > 0 
     ? sections 
-    : [
-        { title: '🔥 Trending Now', items: allDramas.slice(0, 8) },
-        { title: '💝 Romance', items: [...allDramas.slice(2), ...allDramas.slice(0, 2)].slice(0, 8) },
-        { title: '⚔️ Action & Adventure', items: [...allDramas.slice(4), ...allDramas.slice(0, 4)].slice(0, 8) },
-        { title: '🏯 Historical Drama', items: [...allDramas.slice(1), ...allDramas.slice(0, 1)].slice(0, 8) },
-      ].filter(section => section.items.length > 0);
+    : allDramas.length > 0
+    ? [
+        { title: '🔥 Trending Now', items: allDramas.slice(0, 10) },
+        { title: '💝 Romance', items: [...allDramas.slice(3), ...allDramas.slice(0, 3)].slice(0, 10) },
+        { title: '⚔️ Action & Adventure', items: [...allDramas.slice(5), ...allDramas.slice(0, 5)].slice(0, 10) },
+        { title: '🏯 Historical Drama', items: [...allDramas.slice(2), ...allDramas.slice(0, 2)].slice(0, 10) },
+      ].filter(section => section.items.length > 0)
+    : [];
 
   return (
     <div className="min-h-screen pt-20 pb-12">
       <div className="container mx-auto px-4">
-        {/* Hero Banner */}
-        {loading ? (
-          <HeroBannerSkeleton />
-        ) : featuredDrama ? (
-          <div className="fade-in">
-            <HeroBanner drama={featuredDrama} />
-          </div>
-        ) : null}
-
-        {/* Drama Sections */}
-        {loading ? (
+        {/* Loading State */}
+        {loading && (
           <>
+            <HeroBannerSkeleton />
             <CarouselSkeleton />
             <CarouselSkeleton />
             <CarouselSkeleton />
           </>
-        ) : (
-          displaySections.map((section, index) => (
-            <div 
-              key={section.title} 
-              className="slide-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
+        )}
+
+        {/* Error State */}
+        {!loading && error && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <AlertCircle className="w-16 h-16 text-destructive mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Terjadi Kesalahan</h3>
+            <p className="text-muted-foreground text-center mb-6 max-w-md">{error}</p>
+            <button
+              onClick={fetchHome}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105"
+              style={{ backgroundColor: currentPlatform.color }}
             >
-              <DramaCarousel
-                title={section.title}
-                dramas={section.items}
-              />
-            </div>
-          ))
+              <RefreshCw className="w-5 h-5" />
+              Coba Lagi
+            </button>
+          </div>
+        )}
+
+        {/* Content */}
+        {!loading && !error && allDramas.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="text-6xl mb-4">📺</div>
+            <h3 className="text-xl font-semibold mb-2">Tidak Ada Data</h3>
+            <p className="text-muted-foreground text-center mb-6">
+              Platform {currentPlatform.name} tidak mengembalikan data. Coba platform lain.
+            </p>
+            <button
+              onClick={fetchHome}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold glass hover:bg-white/20 transition-all"
+            >
+              <RefreshCw className="w-5 h-5" />
+              Refresh
+            </button>
+          </div>
+        )}
+
+        {!loading && allDramas.length > 0 && (
+          <>
+            {/* Hero Banner */}
+            {featuredDrama && (
+              <div className="fade-in">
+                <HeroBanner drama={featuredDrama} />
+              </div>
+            )}
+
+            {/* Drama Sections */}
+            {displaySections.map((section, index) => (
+              <div 
+                key={section.title} 
+                className="slide-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <DramaCarousel
+                  title={section.title}
+                  dramas={section.items}
+                />
+              </div>
+            ))}
+          </>
         )}
 
         {/* Platform Info */}
@@ -184,14 +139,19 @@ const HomePage: React.FC = () => {
               {currentPlatform.name.slice(0, 2)}
             </div>
             <div>
-              <h3 className="font-display text-lg font-bold">Currently browsing {currentPlatform.name}</h3>
+              <h3 className="font-display text-lg font-bold">
+                {loading ? 'Memuat...' : `${allDramas.length} drama dari ${currentPlatform.name}`}
+              </h3>
               <p className="text-sm text-muted-foreground">
-                Switch platforms anytime using the dropdown in the navbar
+                API: {currentPlatform.api.baseUrl}
               </p>
             </div>
           </div>
           
           <div className="flex flex-wrap gap-2">
+            <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
+              ✓ Real API
+            </span>
             {currentPlatform.menu.map((item) => (
               <span 
                 key={item}
