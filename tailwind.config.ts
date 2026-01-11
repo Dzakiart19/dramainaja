@@ -7,12 +7,16 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "1rem",
       screens: {
         "2xl": "1400px",
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Space Grotesk', 'Inter', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -47,6 +51,23 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        platform: {
+          radreel: "hsl(var(--platform-radreel))",
+          flickreels: "hsl(var(--platform-flickreels))",
+          dotdrama: "hsl(var(--platform-dotdrama))",
+          netshort: "hsl(var(--platform-netshort))",
+          shortmax: "hsl(var(--platform-shortmax))",
+          starshort: "hsl(var(--platform-starshort))",
+          stardusttv: "hsl(var(--platform-stardusttv))",
+          dramadash: "hsl(var(--platform-dramadash))",
+          dramawave: "hsl(var(--platform-dramawave))",
+          dramabox: "hsl(var(--platform-dramabox))",
+          viglo: "hsl(var(--platform-viglo))",
+          micro: "hsl(var(--platform-micro))",
+          melolo: "hsl(var(--platform-melolo))",
+          meloshort: "hsl(var(--platform-meloshort))",
+          reelife: "hsl(var(--platform-reelife))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -65,25 +86,32 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        glow: {
+          "0%, 100%": { opacity: "0.5" },
+          "50%": { opacity: "1" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        float: "float 3s ease-in-out infinite",
+        glow: "glow 2s ease-in-out infinite",
+      },
+      backgroundImage: {
+        "hero-gradient": "var(--gradient-hero)",
+        "card-gradient": "var(--gradient-card)",
+        "glow-gradient": "var(--gradient-glow)",
       },
     },
   },
