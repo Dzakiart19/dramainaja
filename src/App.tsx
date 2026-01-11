@@ -10,6 +10,7 @@ import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
 import RankingPage from "./pages/RankingPage";
 import BookmarkPage from "./pages/BookmarkPage";
+import DramaDetailPage from "./pages/DramaDetailPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/rank" element={<RankingPage />} />
             <Route path="/ranking" element={<RankingPage />} />
             <Route path="/bookmark" element={<BookmarkPage />} />
+            <Route path="/drama/:id" element={<DramaDetailPage />} />
             <Route path="/latest" element={<HomePage />} />
             <Route path="/trending" element={<RankingPage />} />
             <Route path="/categories" element={<HomePage />} />

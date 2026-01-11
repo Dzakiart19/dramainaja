@@ -44,7 +44,7 @@ export const PLATFORMS: Record<PlatformId, PlatformConfig> = {
     color: 'hsl(271 81% 56%)',
     colorClass: 'bg-platform-dotdrama',
     api: {
-      baseUrl: 'https://dramabos.asia/api/dotdrama',
+      baseUrl: 'https://dramabos.asia/api/dotdrama/api/v1',
       health: '/health',
       home: '/home',
       search: '/search',
@@ -61,7 +61,7 @@ export const PLATFORMS: Record<PlatformId, PlatformConfig> = {
     color: 'hsl(142 71% 45%)',
     colorClass: 'bg-platform-netshort',
     api: {
-      baseUrl: 'https://dramabos.asia/api/netshort',
+      baseUrl: 'https://dramabos.asia/api/netshort/api/v1',
       health: '/health',
       discover: '/discover',
       search: '/search',
@@ -78,7 +78,7 @@ export const PLATFORMS: Record<PlatformId, PlatformConfig> = {
     color: 'hsl(45 93% 47%)',
     colorClass: 'bg-platform-shortmax',
     api: {
-      baseUrl: 'https://dramabos.asia/api/shortmax',
+      baseUrl: 'https://dramabos.asia/api/shortmax/api/v1',
       health: '/health',
       home: '/home',
       search: '/search',
@@ -95,7 +95,7 @@ export const PLATFORMS: Record<PlatformId, PlatformConfig> = {
     color: 'hsl(330 81% 60%)',
     colorClass: 'bg-platform-starshort',
     api: {
-      baseUrl: 'https://dramabos.asia/api/starshort',
+      baseUrl: 'https://dramabos.asia/api/starshort/api/v1',
       health: '/health',
       home: '/home',
       search: '/search',
@@ -112,7 +112,7 @@ export const PLATFORMS: Record<PlatformId, PlatformConfig> = {
     color: 'hsl(239 84% 67%)',
     colorClass: 'bg-platform-stardusttv',
     api: {
-      baseUrl: 'https://dramabos.asia/api/stardusttv',
+      baseUrl: 'https://dramabos.asia/api/stardusttv/api/v1',
       health: '/health',
       home: '/home',
       search: '/search',
@@ -128,7 +128,7 @@ export const PLATFORMS: Record<PlatformId, PlatformConfig> = {
     color: 'hsl(173 80% 40%)',
     colorClass: 'bg-platform-dramadash',
     api: {
-      baseUrl: 'https://dramabos.asia/api/dramadash',
+      baseUrl: 'https://dramabos.asia/api/dramadash/api/v1',
       health: '/health',
       home: '/home',
       tabs: '/tabs',
@@ -145,7 +145,7 @@ export const PLATFORMS: Record<PlatformId, PlatformConfig> = {
     color: 'hsl(187 92% 50%)',
     colorClass: 'bg-platform-dramawave',
     api: {
-      baseUrl: 'https://dramabos.asia/api/dramawave',
+      baseUrl: 'https://dramabos.asia/api/dramawave/api/v1',
       health: '/health',
       home: '/home',
       search: '/search',
@@ -162,7 +162,7 @@ export const PLATFORMS: Record<PlatformId, PlatformConfig> = {
     color: 'hsl(25 95% 53%)',
     colorClass: 'bg-platform-dramabox',
     api: {
-      baseUrl: 'https://dramabos.asia/api/dramabox',
+      baseUrl: 'https://dramabos.asia/api/dramabox/api/v1',
       health: '/health',
       foryou: '/foryou',
       search: '/search',
@@ -180,7 +180,7 @@ export const PLATFORMS: Record<PlatformId, PlatformConfig> = {
     color: 'hsl(84 81% 44%)',
     colorClass: 'bg-platform-viglo',
     api: {
-      baseUrl: 'https://dramabos.asia/api/viglo',
+      baseUrl: 'https://dramabos.asia/api/viglo/api/v1',
       health: '/health',
       home: '/home',
       search: '/search',
@@ -198,7 +198,7 @@ export const PLATFORMS: Record<PlatformId, PlatformConfig> = {
     color: 'hsl(220 9% 46%)',
     colorClass: 'bg-platform-micro',
     api: {
-      baseUrl: 'https://dramabos.asia/api/micro',
+      baseUrl: 'https://dramabos.asia/api/micro/api/v1',
       health: '/health',
       list: '/list',
       search: '/search',
@@ -213,7 +213,7 @@ export const PLATFORMS: Record<PlatformId, PlatformConfig> = {
     color: 'hsl(347 77% 50%)',
     colorClass: 'bg-platform-melolo',
     api: {
-      baseUrl: 'https://dramabos.asia/api/melolo',
+      baseUrl: 'https://dramabos.asia/api/melolo/api/v1',
       health: '/health',
       home: '/home',
       search: '/search',
@@ -230,7 +230,7 @@ export const PLATFORMS: Record<PlatformId, PlatformConfig> = {
     color: 'hsl(263 70% 50%)',
     colorClass: 'bg-platform-meloshort',
     api: {
-      baseUrl: 'https://dramabos.asia/api/meloshort',
+      baseUrl: 'https://dramabos.asia/api/meloshort/api/v1',
       health: '/health',
       home: '/home',
       ranking: '/ranking',
@@ -248,7 +248,7 @@ export const PLATFORMS: Record<PlatformId, PlatformConfig> = {
     color: 'hsl(160 84% 39%)',
     colorClass: 'bg-platform-reelife',
     api: {
-      baseUrl: 'https://dramabos.asia/api/reelife',
+      baseUrl: 'https://dramabos.asia/api/reelife/api/v1',
       health: '/health',
       init: '/init',
       home: '/home',
